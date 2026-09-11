@@ -32,7 +32,10 @@ const Home = () => {
                 navigate(`/interview/${data._id}`)
             }
         } catch (requestError) {
-            setError(requestError.response && requestError.response.data && requestError.response.data.message ? requestError.response.data.message : "Unable to generate your interview plan.")
+            const responseData = requestError.response && requestError.response.data
+            setError(responseData && (responseData.error || responseData.message)
+                ? responseData.error || responseData.message
+                : "Unable to generate your interview plan.")
         }
     }
 
