@@ -7,12 +7,22 @@ const api = axios.create({
   withCredentials: true,
 });
 
+api.interceptors.request.use((config) => {
+  const token = sessionStorage.getItem("authToken");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 export async function register({ username, email, password }) {
   const response = await api.post("/api/auth/register", {
     username,
     email,
     password,
   });
+
+  sessionStorage.setItem("authToken", response.data.token);
 
   return response.data;
 }
@@ -23,11 +33,15 @@ export async function login({ email, password }) {
     password,
   });
 
+  sessionStorage.setItem("authToken", response.data.token);
+
   return response.data;
 }
 
 export async function logout() {
   const response = await api.get("/api/auth/logout");
+
+  sessionStorage.removeItem("authToken");
 
   return response.data;
 }
